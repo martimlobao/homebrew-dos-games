@@ -37,7 +37,7 @@ Ready to Read with Pooh is a 1997 interactive CD-ROM video game developed by Dis
 
 ## 🕹 How to create a DOS game as a self-contained macOS app
 
-This guide outlines the process for turning a classic DOS game (e.g. from [ClassicReload](https://classicreload.com)) into a standalone `.app` bundle on macOS using [DOSBox-X](https://dosbox-x.com/).
+This guide outlines the process for turning a classic DOS game (e.g. from [ClassicReload](https://classicreload.com)) into a standalone `.app` bundle on macOS using [DOSBox-X](https://dosbox-x.com/). These instructions are mostly provided for my own benefit, but they should help anyone trying to compile a standalone Mac app for themselves.
 
 ### Download the Game Files from ClassicReload
 
@@ -173,3 +173,20 @@ To avoid Gatekeeper issues:
 ```bash
 codesign --force --deep --sign - MyGame.app
 ```
+
+## 🚀 Creating a release
+
+To create a new game release:
+
+1. Add the working `.app` to the `games/` directory, create a PR, and merge it.
+    > [!IMPORTANT]
+    Ensure that you have run the `codesign` command above to sign the app bundle after making any changes.
+2. On the `main` branch, create a new release tag:
+
+    ```sh
+    git tag my-game-v1.0.0
+    git push origin my-game-v1.0.0
+    ```
+
+3. Get the SHA256 hash from the new [release](https://github.com/martimlobao/homebrew-dos-games/releases).
+4. Update the `.rb` script in `Casks/` with the new hash and version number.
