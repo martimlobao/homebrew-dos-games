@@ -9230,6 +9230,15 @@
 			<key>requirement</key>
 			<string>cdhash H"3abc32cffbd6d297973c60de374727d96c4c78d4"</string>
 		</dict>
+		<key>MacOS/x86_64/.store</key>
+		<dict>
+			<key>cdhash</key>
+			<data>
+			FqPVENH/t834YSRdHX9XnIH6B9c=
+			</data>
+			<key>requirement</key>
+			<string>cdhash H"16a3d510d1ffb7cdf861245d1d7f579c81fa07d7"</string>
+		</dict>
 		<key>Resources/CDROM/ClassicReload.com</key>
 		<dict>
 			<key>hash2</key>
