@@ -14,6 +14,7 @@ And then tap this repository to install the available games:
 
 ```sh
 brew tap martimlobao/dos-games
+brew install --cask jumpstart-1st-grade
 brew install --cask ready-to-read-with-pooh
 ```
 
