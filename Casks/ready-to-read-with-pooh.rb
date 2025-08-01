@@ -1,6 +1,6 @@
 cask "ready-to-read-with-pooh" do
     version "1.0.1"
-    sha256 "a69a19612cce850258b705e8c8919dd41a94d69b226642a02200d92c2cb1322a"
+    sha256 "d2bd36ef6e947f3f60356384859189a1c4cec431d513570fc45272c0b5d31a69"
 
     url "https://github.com/martimlobao/homebrew-dos-games/releases/download/ready-to-read-with-pooh-v#{version}/ready-to-read-with-pooh.app.zip"
     name "Ready to Read with Pooh"
