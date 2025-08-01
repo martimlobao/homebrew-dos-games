@@ -15,5 +15,7 @@
     <string>APPL</string>
     <key>CFBundleIconFile</key>
     <string>icon.icns</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.games</string>
 </dict>
 </plist>
