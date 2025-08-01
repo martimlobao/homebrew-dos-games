@@ -140,7 +140,7 @@ Create `Contents/Info.plist`:
 </plist>
 ```
 
-When updating the app, remember to bump the version number.
+When updating the app, remember to bump the `CFBundleVersion` number.
 
 ### Sign the app
 
