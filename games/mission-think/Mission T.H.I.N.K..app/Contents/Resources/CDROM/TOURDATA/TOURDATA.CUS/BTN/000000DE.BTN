@@ -1,0 +1,20 @@
+// definition for the BTN resource
+
+string	// App name (window title)
+long	// left edge of text buttons
+long	// top edge of text buttons
+long	// button spacing
+long	// Windows font id (2 = small, 3 = bigger)
+long	// Highlight background text color
+long	// Foreground text color
+string	// special (i.e. OEM) label
+string	// Ini file to save app path for darn win16
+list
+	string		// Button name
+	string		// Windows 3.11 app to launch
+	string		// Windows 95 app to launch 
+	string		// Mac creator to launch, possibly followed by docname or URL
+	string		// Error message if app is not found
+	tbyte TP_BOOLEAN	// Terminate (TRUE) or Continue after launch? (FALSE)
+endlist
+
