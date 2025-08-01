@@ -15,6 +15,8 @@ And then tap this repository to install the available games:
 ```sh
 brew tap martimlobao/dos-games
 brew install --cask jumpstart-1st-grade
+brew install --cask jumpstart-kindergarten
+brew install --cask mission-think
 brew install --cask ready-to-read-with-pooh
 ```
 
@@ -35,6 +37,12 @@ JumpStart 1st Grade is a PC game created by Knowledge Adventure in 1995 intended
 JumpStart Kindergarten is an educational video game developed by Fanfare Software and released by Knowledge Adventure on the MS-DOS platform in 1994. It was the first product released in the JumpStart series and is intended to teach kindergarten students. According to the Knowledge Adventure founder Bill Gross, it is the first educational software program that covers the entire kindergarten curriculum.
 
 ![JumpStart Kindergarten](/static/jumpstart-kindergarten.png)
+
+### Mission T.H.I.N.K.
+
+Mission T.H.I.N.K. (Thinking Hard Inspires New Knowledge) is the final addition to the Super Solvers series created by The Learning Company. Morty Maxwell tries to take over the Shady Glen Game Factory with help of the Metal Minions. The game cultivates critical thinking skills by encouraging players to solve puzzles and create strategies. The original score in the five levels is by the famous fusion ensemble Yellowjackets.
+
+![Mission T.H.I.N.K.](/static/mission-think.png)
 
 ### Ready to Read with Pooh
 
