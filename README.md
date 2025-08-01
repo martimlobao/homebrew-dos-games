@@ -2,14 +2,32 @@
 
 Collection of Homebrew-installable retro Windows and DOS games from my childhood.
 
-## Usage
+## ⬇️ Installation
 
-Tap this repository to install the available games:
+You can download the zipped games from the [Releases](https://github.com/martimlobao/homebrew-dos-games/releases) section of this repo. Alternatively, you can use [Homebrew](https://brew.sh/) to install each game via the command line. You can install it with the following command:
+
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+And then tap this repository to install the available games:
 
 ```sh
 brew tap martimlobao/dos-games
-brew install my-game
+brew install --cask ready-to-read-with-pooh
 ```
+
+Note that when running these games for the first time, macOS will complain that it was not able to verify the app is free of malware because it was not compiled by an "identified developer" (i.e. me). To open the app anyway, click "Done" on the popup, and then open System Settings, open the _Privacy & Security_ tab, scroll to the bottom of the page to the _Security_ section and click on the "Open Anyway" button next to the message saying the app was blocked. Alternatively, you can install the app with the [`--no-quarantine` flag](https://docs.brew.sh/FAQ#why-cant-i-open-a-mac-app-from-an-unidentified-developer) to bypass this initial check (e.g. `brew install --cask --no-quarantine my-app`).
+
+![Unidentified developer warning](/static/unidentified-developer-warning.png)
+
+## 👾 Available games
+
+### Ready to Read with Pooh
+
+Ready to Read with Pooh is a 1997 interactive CD-ROM video game developed by Disney Interactive's Victoria studio that helps children from ages three to six learn to read. There are nine activities in the game. When the player completes an activity successfully, they will receive an item that goes into a treehouse.
+
+![Ready to Read with Pooh](/static/ready-to-read-with-pooh.png)
 
 ## 🕹 How to create a DOS game as a self-contained macOS app
 
