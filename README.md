@@ -23,6 +23,12 @@ Note that when running these games for the first time, macOS will complain that 
 
 ## 👾 Available games
 
+### JumpStart 1st Grade
+
+JumpStart 1st Grade is a PC game created by Knowledge Adventure in 1995 intended to teach a first grade curriculum. It was the first appearance of Frankie, a brown, anthropomorphic dachshund dog who would go on to become the mascot of the JumpStart series.
+
+![JumpStart 1st Grade](/static/jumpstart-1st-grade.png)
+
 ### Ready to Read with Pooh
 
 Ready to Read with Pooh is a 1997 interactive CD-ROM video game developed by Disney Interactive's Victoria studio that helps children from ages three to six learn to read. There are nine activities in the game. When the player completes an activity successfully, they will receive an item that goes into a treehouse.

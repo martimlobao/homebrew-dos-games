@@ -1,0 +1,59 @@
+Apple's QuickTime Plug-in for the Internet
+
+Version 1.1 for Windows 3.1 Users
+
+
+Known Problems
+--------------
+
+The Windows plug-in has been developed to work with most browsers. 
+However, as with anything that is attempting to be compatible across
+multiple applications, some problems are not correctable from within the
+plug-in.
+
+The following is a summary of known problems and the browser it is
+associated with:
+
+
+Netscape 3.0, 3.1
+
+* If you click on Stop prior to completing a download on a QTVR movie and 
+then attempt to play the movie the browser application will lock up.  The system 
+does not lock up.
+
+* If the webmaster has created a link from a QuickTime VR hotspot to a
+JPEG or GIF89 image, Navigator will crash when you click on that
+hotspot.
+
+* When playing multiple movies in a table. If the browser window is smaller 
+than the  table with movies. Upon maximizing the window some movies will 
+display parts of other movies. If this happens click on the corrupt movie 
+and it will correct itself.
+
+* If you are using Windows 3.1 with Trumpet Winsock. Embedded QuickTime VR 
+movies cannot be saved to disk. This does not occur using Windows for 
+Workgroups 3.1.1.
+
+
+Netscape 2.x
+
+* Moving the mouse while a QuickTime movie is playing can cause audio
+and video to stutter and temporarily halt.  This occurs only on the
+32-bit versions.
+
+
+Internet Explorer 3.0 for Windows 3.1 (BETA)
+
+* The plug-in could not effectively function in the pre-release beta
+version of Internet Explorer for Windows 3.1 that we tested with. We will
+evaluate a future release when the product is nearer to completion.
+
+
+QuickTime Windows 2.1.2
+
+* Changing the bit depth in the settings windows after loading a QT or
+QTVR movie into the browser causes the browser to crash with a page
+fault.
+
+
+This document was last updated December 11, 1996

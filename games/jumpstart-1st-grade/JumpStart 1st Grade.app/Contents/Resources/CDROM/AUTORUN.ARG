@@ -1,0 +1,63 @@
+BEGIN
+	{
+		//
+		// Only change prdouct name in one place
+		//
+		set _SetupIni to $ExePath
+		append "SUPPORT\\SETUP.INI" to _SetupIni
+
+		//
+		// Set our important variables
+		//
+		set _Product to $IniVariable %_SetupIni% "Product" "ShortTitle"
+		set _IniFile to "KA.INI"
+		set _HDRoot to $IniVariable %_IniFile% %_Product% "ProductHDRoot"
+		set _CDRoot to $ExePath
+		set _LangIni to %_CDRoot%
+		append "STR.INI" to _LangIni
+		set _Bmp to %_CDRoot%
+		append "PLSWAIT.BMP" to _Bmp
+		set _ARunQuest to $IniVariable %_LangIni% "ArgFile" "Install"
+
+		//
+		// Default to setup
+		//
+		set _CDPlace to %_CDRoot%
+		set _Command to %_CDRoot%
+		append "SETUP.EXE" to _Command
+
+		//
+		// Check for an executable with the short title as the name
+		//
+		set _ChkFile to %_HDRoot% 
+		append "\\" to _ChkFile
+		append %_Product% to _ChkFile
+		append ".EXE" to _ChkFile
+		set _FileExists to $Exists %_ChkFile%
+
+		//
+		// If we're installed, just run the product
+		//
+		if ( %_HDRoot% != "" && %_FileExists% == "y" ) {
+			set _CDPlace to %_HDRoot%
+			set _Command to %_HDRoot%
+			append "\\" to _Command
+			append %_Product% to _Command
+			append ".EXE" to _Command
+			set _ARunQuest to $IniVariable %_LangIni% "ArgFile" "Run"
+		}
+
+	}
+	-FIRSTBMP %_Bmp%
+    -OnlyOne
+    -386Enhanced
+
+    -VFreeBlock 2000
+    -VFreeMem 4700
+    -PFree 1700
+    -GlobalAlloc 1000
+	-AUTORUN %_ARunQuest%
+	-CD %_CDPlace%
+	-COMMAND %_Command%
+    -Bye
+END
