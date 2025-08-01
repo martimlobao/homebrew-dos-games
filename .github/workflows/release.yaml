@@ -5,6 +5,9 @@ on: # yamllint disable-line rule:truthy
     tags:
       - '*-v*'
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: macos-latest
