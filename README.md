@@ -30,6 +30,12 @@ JumpStart 1st Grade is a PC game created by Knowledge Adventure in 1995 intended
 
 ![JumpStart 1st Grade](/static/jumpstart-1st-grade.png)
 
+### JumpStart Kindergarten
+
+JumpStart Kindergarten is an educational video game developed by Fanfare Software and released by Knowledge Adventure on the MS-DOS platform in 1994. It was the first product released in the JumpStart series and is intended to teach kindergarten students. According to the Knowledge Adventure founder Bill Gross, it is the first educational software program that covers the entire kindergarten curriculum.
+
+![JumpStart 1st Grade](/static/jumpstart-kindergarten.png)
+
 ### Ready to Read with Pooh
 
 Ready to Read with Pooh is a 1997 interactive CD-ROM video game developed by Disney Interactive's Victoria studio that helps children from ages three to six learn to read. There are nine activities in the game. When the player completes an activity successfully, they will receive an item that goes into a treehouse.

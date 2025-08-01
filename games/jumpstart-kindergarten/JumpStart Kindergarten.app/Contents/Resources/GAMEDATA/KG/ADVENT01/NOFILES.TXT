@@ -1,0 +1,4 @@
+Sorry, not enough file handles are available to run install/setup.
+Check to make sure \CONFIG.SYS has the line 
+	FILES=20
+then reboot and try running setup or install again.

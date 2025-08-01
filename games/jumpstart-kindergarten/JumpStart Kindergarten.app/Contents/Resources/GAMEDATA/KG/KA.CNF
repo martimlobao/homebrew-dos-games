@@ -1,0 +1,34 @@
+AutoMovie         : On
+CDdrive           : C
+cdroot            : C:\KG_DOS\KG
+digitizedSound    : On
+ExtraMemory       : Automatic
+HDdrive           : C
+hdroot            : C:\KG
+HDRootKG          : C:\KG\KG
+InstallLevel      : 1
+LANG              : eng
+mouseSensitivity  : 50
+music             : On
+musicCard         : Sound Card
+musicDevParams    : a220 
+musicDriver       : C:\KG\SBP2FM.DRV
+musicType         : ADL
+musicVolume       : 90
+musicVolumeLow    : 70
+needMem           : 520
+no                : N
+PrinterPort       : LPT1
+Printing          : Detect
+shadowCD          : On
+shortTitle        : KG
+soundCard         : Sound Blaster Pro
+soundCode         : SBP
+soundDevice       : Sound Blaster Pro
+soundDevParams    : a220 i7 d1 
+soundDriver       : C:\KG\SBPDIG.DRV
+soundVolume       : 80
+stopMovies        : On
+title             : JumpStart Kindergarten CD-ROM
+yes               : Y
+zoomUseRealSound  : Off
