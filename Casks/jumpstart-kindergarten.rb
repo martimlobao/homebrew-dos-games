@@ -1,6 +1,6 @@
 cask "jumpstart-kindergarten" do
     version "1.0.0"
-    sha256 "XXX"
+    sha256 "2c71433663a84dffcabee568191234bb000084565ee76fd5064675f9e2b9162a"
 
     url "https://github.com/martimlobao/homebrew-dos-games/releases/download/jumpstart-kindergarten-v#{version}/jumpstart-kindergarten.app.zip"
     name "JumpStart Kindergarten"

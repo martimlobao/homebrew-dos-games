@@ -34,7 +34,7 @@ JumpStart 1st Grade is a PC game created by Knowledge Adventure in 1995 intended
 
 JumpStart Kindergarten is an educational video game developed by Fanfare Software and released by Knowledge Adventure on the MS-DOS platform in 1994. It was the first product released in the JumpStart series and is intended to teach kindergarten students. According to the Knowledge Adventure founder Bill Gross, it is the first educational software program that covers the entire kindergarten curriculum.
 
-![JumpStart 1st Grade](/static/jumpstart-kindergarten.png)
+![JumpStart Kindergarten](/static/jumpstart-kindergarten.png)
 
 ### Ready to Read with Pooh
 
