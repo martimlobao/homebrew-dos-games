@@ -1,0 +1,29 @@
+indestdir
+set _line 0
+:doc_top
+set _doctext doceng.txl
+textbox 1 1 80 25 blue
+color back blue
+type %_doctext%\readme0.txt 5 18 70 7
+color back cyan
+menu %_doctext%\readme.mnu 15 3 50 13 %_doctext%\readme.tit %_doctext%\updown.leg -default %_line%
+set _choice "%_1%"
+switch %_choice%
+case default:
+	textbox 1 1 80 25 black
+	if "%cdroot%" eq ""
+		spawn more.com doc\readme%_choice%.txt
+    endif
+	if "%cdroot%" ne ""
+		spawn more.com %cdroot%\doc\readme%_choice%.txt
+    endif
+	type %_doctext%\anykey.txt 1 25 80 1
+	waitkey_noesc
+	set _line %_choice%
+	goto doc_top
+case escape:
+case quit:
+endswitch
+textbox 1 1 80 25 black
+quit 0
+

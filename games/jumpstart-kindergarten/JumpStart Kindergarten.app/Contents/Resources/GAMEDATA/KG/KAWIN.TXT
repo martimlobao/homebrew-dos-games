@@ -1,0 +1,4 @@
+You must close all of your other applications before you can start the 
+Knowledge Adventure product.  
+
+KAWIN internal error: could not execute product batch file.
