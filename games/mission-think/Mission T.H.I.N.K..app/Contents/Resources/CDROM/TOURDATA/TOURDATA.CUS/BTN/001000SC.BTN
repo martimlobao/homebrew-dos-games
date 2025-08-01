@@ -1,0 +1,63 @@
+#include "000001_SysDefs.VAL"
+
+// Screen layout section, always at top of file:
+//    1. App name (window title)
+//    2. Left edge of text buttons
+//    3. Top edge of text buttons
+//    4. Button spacing
+//    5. Windows font id (2 = small, 3 = bigger)
+//    6. Highlight text color 	
+//    7. Foreground Text Color	
+//    8. Special (i.e. OEM) label
+//    9. Ini file where path of app is listed only used for win16
+//
+
+"Mission: T.H.I.N.K."
+228
+240
+17
+2
+42
+102
+""
+"tlcapps.ini"
+//   
+// Key for button text:
+//    Button name
+//    Windows 16 bit app to launch
+//    Windows 32 bit app to launch
+//    Mac creator to launch, possibly followed by docname or URL
+//    Error message if app is not found
+//    Terminate MECC Tour after launch? (TRUE/FALSE)
+// 
+
+"Install Mission: T.H.I.N.K."
+"setup.exe"
+"setup.exe"
+"STiO"
+"Installer not found. Please check that the CD is in your drive."
+TRUE
+
+
+"Play Mission: T.H.I.N.K."
+"*APPL [Mission: T.H.I.N.K. Web] ssmwin16.exe"
+"*APPL [Mission: T.H.I.N.K.] [1.01] ssmwin32.exe"
+"MEM3"
+"Please install Mission T.H.I.N.K. first and/or check that the CD is in your drive."
+TRUE
+
+
+"Internet Link"
+"*HTTP memthink.url"
+"*HTTP memthink.url"
+"*HTTP http://cdlink.learningco.com/Weblink.asp?product=default"
+""
+FALSE
+
+
+"Exit"
+"*"
+"*"
+"*"
+"*"
+TRUE
