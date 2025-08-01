@@ -1,0 +1,42 @@
+---
+name: Package and Release DOS Game
+on: # yamllint disable-line rule:truthy
+  push:
+    tags:
+      - '*-v*'
+
+jobs:
+  release:
+    runs-on: macos-latest
+
+    steps:
+      - name: Extract game name and version from tag
+        id: taginfo
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          GAME="${TAG%%-v*}"
+          VERSION="${TAG#*-v}"
+          echo "game=$GAME" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Zip the .app bundle
+        run: |
+          cd "games/${{ steps.taginfo.outputs.game }}"
+          zip -r "${{ steps.taginfo.outputs.game }}.app.zip" *.app
+          mv *.zip ../../
+
+      - name: Calculate sha256
+        id: hash
+        run: |
+          SHASUM=$(shasum -a 256 "${{ steps.taginfo.outputs.game }}.app.zip" | awk '{print $1}')
+          echo "sha256=$SHASUM" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "${{ steps.taginfo.outputs.game }} v${{ steps.taginfo.outputs.version }}"
+          tag_name: "${{ github.ref_name }}"
+          files: "${{ steps.taginfo.outputs.game }}.app.zip"
