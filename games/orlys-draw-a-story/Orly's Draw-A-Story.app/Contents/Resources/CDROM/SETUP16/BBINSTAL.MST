@@ -1,0 +1,1129 @@
+'**************************************************************************
+'*                Generic install script for Broderbund Products
+'**************************************************************************
+
+'$DEFINE DEBUG  ''Define for script development/debugging
+
+''parse command line for custom commands here
+GLOBAL build$
+GLOBAL destCfgFile$
+GLOBAL srcDirStr$
+GLOBAL canChain$
+GLOBAL chainWindow%
+DECLARE FUNCTION ParseCommand (commFlag$) AS STRING
+
+build$ = ParseCommand("B")
+destCfgFile$ = build$
+
+canChain$ = ParseCommand("X")
+temp$ = ParseCommand("P")
+IF temp$ <> "" THEN
+	chainWindow% = VAL(temp$)
+ELSE
+	chainWindow% = 0
+END IF
+
+'$INCLUDE 'setupapi.inc'
+'$INCLUDE 'msdetect.inc'
+'$INCLUDE 'msregdb.inc'
+
+''Dialog ID's
+CONST WELCOME       = 100
+CONST NOMIDIWARN	= 101
+CONST NOWAVEWARN	= 102
+CONST DUPFILE		= 103
+CONST ASKQUIT       = 200
+CONST FONTERROR		= 201
+CONST DESTPATH      = 300
+CONST WININIBACKUP	= 301
+CONST EXITFAILURE   = 400
+CONST EXITQUIT      = 600
+CONST EXITSUCCESS   = 700
+CONST EXITSUCCESS1  = 701
+CONST EXITSUCCESS2  = 702
+CONST APPHELP       = 900
+CONST MIDILIST		= 1901
+CONST EXITINCOMPLETE	= 1902
+CONST CUSTINST     = 6200
+CONST TOOBIG       = 6300
+CONST BADPATH       = 6400
+
+''	Dialog Variable String IDs
+CONST	PRODUCTNAME	=	701
+CONST	CUSTSUPPNUM	=	702
+CONST	SUCCESSCOMMENT = 703
+CONST SUCCESSCOMMENT1 = 750
+CONST SUCCESSCOMMENT2 = 751
+CONST	FILEPATH	= 704
+CONST	CHAINTEXT	= 705
+
+''Bitmap ID
+CONST LOGO = 1
+
+CONST BROADKEY = 30706
+
+GLOBAL WINDRIVE$    ''Windows drive letter.
+GLOBAL sourceDir$	''Install from directory.
+GLOBAL destDir$     ''Default destination directory.
+GLOBAL cfgFile$		''Config file containing custom info for installer
+GLOBAL filesInstalled%	''0 = no files installed, 1 = files installed
+GLOBAL waveNeeded%	''0 = wave device not required by product, 1 = wave device is required by product
+GLOBAL waveCount%	'' # of wave devices installed on system
+GLOBAL midiNeeded%	''0 = MIDI device not required by product, 1 = MIDI device is required by product
+GLOBAL midiCount%	'' # of MIDI devices installed on system
+GLOBAL qtwNeeded% '' QuickTime for Windows required
+GLOBAL qtwVersion$ '' QuickTime for Windows version that is required
+GLOBAL fontsToInstall%	''0 = no fonts need be installed, 1 = fonts need to be installed
+GLOBAL fontsInstalled%	''0 = not installed, 1 = installed (partial or otherwise)
+GLOBAL fontInstallError%	''0 = no error
+GLOBAL wingNeeded% ''0 = WinG not required, 1 = WinG required
+GLOBAL winIniBkpFile$	''Backup name for WIN.INI file
+GLOBAL szInf$
+GLOBAL prodName$
+GLOBAL CUIDLL$
+GLOBAL filePathID$
+GLOBAL replaceAll%
+GLOBAL ExcessNeeded&	''if > 0, indicates space unavailable for install
+GLOBAL sucCom$
+GLOBAL qtwSucComm$
+GLOBAL cmdLine$
+GLOBAL midiCmdLine$
+GLOBAL qtwCmdLine$
+GLOBAL concatedCmdLine$
+
+DECLARE FUNCTION MakePath (szDir$, szFile$) AS STRING
+DECLARE FUNCTION InstantString (varStr$) AS STRING
+DECLARE SUB DeinstFiles
+DECLARE FUNCTION AddDirToCopyList (theFile$,dir$,srcDir$,dstDir$,silent%) AS INTEGER
+DECLARE FUNCTION SetDriveStatus (silent%) AS INTEGER
+DECLARE SUB DoRegistrations
+DECLARE FUNCTION CreateRegEntries LIB "brodreg.dll" (srcCfgFile$,dstCfgFile$,varTable$,demarChar$) AS INTEGER
+DECLARE FUNCTION InstallFonts LIB "brodfont.dll" (installDir$, configFile$, winBackup$) AS INTEGER
+DECLARE FUNCTION DeinstallFonts LIB "brodfont.dll" (configFile$, winBackup$) AS INTEGER
+DECLARE FUNCTION SetParentWindow LIB "brodutil.dll" (parentWindow%) AS INTEGER
+DECLARE FUNCTION DeleteDirectory LIB "brodutil.dll" (directory$,silent%) AS INTEGER
+DECLARE FUNCTION DeinstallFiles LIB "brodutil.dll" (directory$,config$,section$,remove%) AS INTEGER
+DECLARE FUNCTION NotifyChain LIB "brodutil.dll" (chainWindow%,wParam%,theMess$) AS INTEGER
+DECLARE FUNCTION PGInstall LIB "brodpgi.dll" (theFile$,silent%,showGroup%) AS INTEGER
+DECLARE FUNCTION PGUninstall LIB "brodpgi.dll" (theFile$,prejudice%) AS INTEGER
+DECLARE FUNCTION GetNetPGSize LIB "brodpgi.dll" (theFile$) AS INTEGER
+DECLARE FUNCTION SelectMidiDevice LIB "brodmidi.dll" (cmdLine$) AS INTEGER
+DECLARE FUNCTION GetDriverCount LIB "brodmidi.dll" (driverType$) AS INTEGER
+
+''DECLARE FUNCTION GetClusterSize LIB "brodfile.dll" (driveLetter$) AS LONG
+
+INIT:
+    CUIDLL$ = "mscuistf.dll"            ''Custom user interface dll
+	HELPPROC$ = "FHelpDlgProc"          ''Help dialog procedure
+
+	szInf$ = GetSymbolValue("STF_SRCINFPATH")
+	IF szInf$ = "" THEN
+		szInf$ = GetSymbolValue("STF_CWDDIR") + "BBINSTAL.INF"
+	ELSE
+		SPLITPATH szInf$,bDrive$,bDir$,bFile$,bExt$
+        IF bDrive$ = "" THEN
+			szInf$ = GetSymbolValue("STF_CWDDIR")+szInf$
+		END IF
+	END IF
+    ReadInfFile szInf$
+
+	WINDRIVE$ = MID$(GetWindowsDir, 1, 1)
+	sourceDir$ = GetSymbolValue("STF_SRCDIR")
+	IF LEN(sourceDir$) > 3 THEN
+		sourceDir$ = Mid$(sourceDir$,1,LEN(sourceDir$)-1)
+	END IF
+
+
+''GET CONFIG FILE INFO
+	SPLITPATH szInf$,bDrive$,bDir$,bFile$,bExt$
+	cfgFile$ = MakePath(sourceDir$,bFile$+".BDF")
+	IF DoesFileExist(cfgFile$,femExists) = 1 THEN
+		destDir$ = WINDRIVE$+":\"+GetIniKeyString(cfgFile$,"directories","TargetDir")
+		prodName$ = GetIniKeyString(cfgFile$, "product", "ProductName")
+		waveNeeded% = VAL(GetIniKeyString(cfgFile$,"general","wavedevice"))
+		midiNeeded% = VAL(GetIniKeyString(cfgFile$,"general","mididevice"))
+		qtwNeeded% = VAL(GetIniKeyString(cfgFile$,"quicktime","qtwRequired"))
+		qtwVersion$ = GetIniKeyString(cfgFile$,"quicktime","qtwVersion")
+		fontsToInstall% = VAL(GetIniKeyString(cfgFile$,"general","fontinstall"))
+		wingNeeded% = VAL(GetIniKeyString(cfgFile$,"general","wing"))
+		sucCom$ = GetIniKeyString(cfgFile$,"general","successcomment")
+		IF midiNeeded% = 1 THEN
+			midiCmdLine$ = GetIniKeyString(cfgFile$,"general","chaincommand")
+			cmdLine$ = ""
+		ELSE
+			midiCmdLine$ = ""
+			cmdLine$ = GetIniKeyString(cfgFile$,"general","chaincommand")
+		END IF
+		qtwCmdLine$ = GetIniKeyString(cfgFile$,"quicktime","qtwCmdLine")
+		qtwSucComm$ = GetIniKeyString(cfgFile$,"quicktime","qtwsuccomm")
+	ELSEIF build$ <> "" THEN
+		cfgFile$ = destCfgFile$
+		destDir$ = GetIniKeyString(cfgFile$,"directories","MediaBuildDir")
+		IF destDir$ = "" THEN
+			destDir$ = WINDRIVE$+":\BRODINST"
+		END IF
+		prodName$ = "Installer for "+GetIniKeyString(cfgFile$, "product", "ProductName")
+		waveNeeded% = 0
+		midiNeeded% = 0
+		qtwNeeded% = 0
+		qtwVersion$ = ""
+		fontsToInstall% = 0
+      wingNeeded% = 0
+		sucCom$ = ""
+		cmdLine$ = ""
+		midiCmdLine$ = ""
+		qtwCmdLine$ = ""
+      qtwSucComm$ = ""
+	ELSE
+		cfgFile$ = ""
+		destDir$ = WINDRIVE$+":\BRODINST"
+		prodName$ = "Unspecified Product"
+		waveNeeded% = 0
+		midiNeeded% = 0
+		qtwNeeded% = 0
+		qtwVersion$ = ""
+		fontsToInstall% = 0
+		wingNeeded% = 0
+		sucCom$ = ""
+		cmdLine$ = ""
+		midiCmdLine$ = ""
+		qtwCmdLine$ = ""
+      qtwSucComm$ = ""
+	END IF
+
+	filesInstalled% = 0
+	waveCount% = 0
+	midiCount% = 0
+	fontsInstalled% = 0
+	fontInstallError% = 0
+	winIniBkpFile$ = "WIN.BAK"
+	skip% = 0
+
+	prodNameID$ = LTRIM$(STR$(PRODUCTNAME))
+	AddListItem "VarStringID", prodNameID$
+	SetSymbolValue prodNameID$,prodName$
+
+	filePathID$ = LTRIM$(STR$(FILEPATH))
+	AddListItem "VarStringID", filePathID$
+
+	something% = SetParentWindow(HwndFrame())
+
+	SetBitmap CUIDLL$, LOGO
+	SetTitle GetSymbolValue(prodNameID$)
+	ExcessNeeded& = 0
+
+    ''CustInst list symbols
+	FOR i% = 1 TO 7 STEP 1
+		AddListItem "DriveStatusText", ""
+	NEXT i%
+	IF destDir$ <> "" THEN
+		ReplaceListItem "DriveStatusText", 7, destDir$
+	END IF
+
+    ''Disk cost list symbols
+	FOR i% = 1 TO 26 STEP 1
+		AddListItem "ExtraCosts", "0"
+	 NEXT i%
+
+    IF build$ <> "" THEN
+		srcDirStr$ = GetIniKeyString(cfgFile$, "build", "sourcedir")
+	ELSE
+		srcDirStr$ = GetIniKeyString(cfgFile$,"directories","sourcedir")
+	END IF
+
+'$IFDEF DEBUG
+    i% = SetSizeCheckMode(scmOnIgnore)    '' could use scmOff; def = scmOnFatal
+	IF IsDriveValid(WINDRIVE$) = 0 THEN
+		i% = DoMsgBox("Windows drive ('"+WINDRIVE$+"') is not a valid drive.", "DEBUG", MB_TASKMODAL+MB_ICONHAND+MB_OK)
+        GOTO QUIT
+    END IF
+'$ENDIF ''DEBUG
+
+WELCOME:
+	SetSymbolValue "CENTERWINDOW", "BOTH"
+	SetSymbolValue "OFFSETVERTPERC", "-10"
+	sz$ = UIStartDlg(CUIDLL$, WELCOME, "FInfoDlgProc", APPHELP, HELPPROC$)
+	IF sz$ = "CONTINUE" THEN
+		  UIPop 1
+    ELSE
+        GOSUB ASKQUIT
+        GOTO WELCOME
+	END IF
+
+WAVESELECT:
+	IF waveNeeded% = 0 THEN
+		GOTO WAVESELECTEND
+	END IF
+
+	waveCount% = GetDriverCount("wave")
+	IF waveCount% > 0 THEN
+		GOTO WAVESELECTEND
+	END IF
+
+	sz$ = UIStartDlg(CUIDLL$,NOWAVEWARN,"FInfoDlgProc",APPHELP,HELPPROC$)
+	IF sz$ = "CONTINUE" THEN
+		UIPop 1
+		AddListItem "IncompleteInstall", "Your system has no wave drivers installed."
+		GOTO WAVESELECTEND
+	ELSE
+		GOSUB ASKQUIT
+		GOTO WAVESELECT
+	END IF
+WAVESELECTEND:
+
+
+MIDISELECT:
+	IF midiNeeded% = 0 THEN
+		GOTO MIDISELECTEND
+	END IF
+
+	midiCount% = GetDriverCount("midi")
+	IF midiCount% > 0 THEN
+		GOTO MIDISELECTEND
+	END IF
+
+	sz$ = UIStartDlg(CUIDLL$,NOMIDIWARN,"FInfoDlgProc",APPHELP,HELPPROC$)
+	IF sz$ = "CONTINUE" THEN
+		UIPop 1
+		AddListItem "IncompleteInstall", "Your system has no MIDI drivers installed."
+''		cmdLine$ = ""
+		GOTO MIDISELECTEND
+	ELSE
+		GOSUB ASKQUIT
+		GOTO MIDISELECT
+	END IF
+MIDISELECTEND:
+
+
+QTWSELECT:
+	IF qtwNeeded% = 0 THEN
+		GOTO QTWSELECTEND
+	ENDIF
+
+	verString$ = GetVersionOfFile(GetWindowsSysDir+"QTIM.DLL")
+	IF verString$ < qtwVersion$ THEN
+		IF GetWindowsMajorVersion() = 3 AND GetWindowsMinorVersion() < 20 THEN
+		ELSE
+			qtwCmdLine95$ = GetIniKeyString(cfgFile$,"quicktime","qtw95CmdLine")
+			IF qtwCmdLine$ <> "" AND qtwVersion$ < "2.1" THEN
+         		qtwCmdLine$ = qtwCmdLine$+";"+qtwCmdLine95$
+			END IF
+		END IF
+	ELSE
+		qtwCmdLine$ = ""
+		GOTO QTWSELECTEND
+	END IF
+QTWSELECTEND:
+
+
+CUSTINST:
+prevCur% = ShowWaitCursor()
+	result% = SetDriveStatus(1)
+RestoreCursor prevCur%
+	sz$ = UIStartDlg(CUIDLL$, CUSTINST, "FCustInstDlgProc", APPHELP, HELPPROC$)
+
+    IF sz$ = "CONTINUE" THEN
+		''Install only if it will fit.
+		IF ExcessNeeded& > 0 THEN
+			GOSUB TOOBIG
+			GOTO CUSTINST
+		END IF
+        UIPop 1
+	ELSEIF sz$ = "PATH" THEN
+        GOTO GETPATH
+	ELSEIF sz$ = "REACTIVATE" THEN
+		GOTO CUSTINST
+	ELSEIF sz$ = "EXIT" THEN
+        GOSUB ASKQUIT
+        GOTO CUSTINST
+	ELSEIF sz$ = "BACK" THEN
+        UIPop 1
+		GOTO WELCOME
+	ELSE
+		GOSUB ASKQUIT
+        GOTO CUSTINST
+	END IF
+	result% = SetDriveStatus(0)
+	IF result% = 1 THEN
+		GOTO CUSTINST
+    END IF
+
+
+    IF fontsToInstall% = 0 THEN
+		GOTO GETWINIBKUPEND
+    END IF
+GETWINIBKUP:
+	SetSymbolValue "EditTextIn", winIniBkpFile$
+	SetSymbolValue "EditFocus", "END"
+GETWINIBKUPL1:
+	sz$ = UIStartDlg(CUIDLL$, WININIBACKUP, "FEditDlgProc", APPHELP, HELPPROC$)
+	winIniBkpFile$ = GetWindowsDir()+GetSymbolValue("EditTextOut")
+
+    IF sz$ = "CONTINUE" THEN
+		UIPop 1
+    ELSEIF sz$ = "REACTIVATE" THEN
+		GOTO GETWINIBKUPL1
+    ELSEIF sz$ = "BACK" THEN
+    	UIPop 1
+		GOTO CUSTINST
+    ELSE
+    	GOSUB ASKQUIT
+		GOTO GETWINIBKUP
+	END IF
+
+	CopyFile GetWindowsDir()+"WIN.INI", winIniBkpFile$, cmoOverwrite, 0
+GETWINIBKUPEND:
+
+
+	''BEGIN INSTALLATION PROCESS
+	listLen% = GetListLength("NEWDIRLIST")
+	SetSymbolValue "BASE0$",destDir$
+	FOR i% = 1 TO listLen% STEP 1
+		theDir$ = InstantString(GetListItem("NEWDIRLIST",i%))
+        IF theDir$ <> "" THEN
+			CreateDir theDir$, cmoVital
+			ReplaceListItem "DIRLIST",i%,theDir$
+		END IF
+	NEXT
+	RemoveSymbol "BASE0$"
+
+	''INSTALL FILES
+	filesInstalled% = 1
+	CopyFilesInCopyList
+	ClearCopyList
+
+
+	IF build$ = "" THEN
+		IF cfgFile$ <> "" THEN
+			''COPY INSTALLER CONFIG FILE TO DEST DIR, AND UPDATE WITH RUNTIME INFO
+			SPLITPATH szInf$,bDrive$,bDir$,bFile$,bExt$
+			destCfgFile$ = MakePath(destDir$,bFile$+".CFG")
+			CopyFile cfgFile$, destCfgFile$, cmoOverwrite, 0
+
+		  ''[directories] section contains directory listings with no trailing \
+			IF INSTR(LEN(sourceDir$),sourceDir$,"\") > 0 THEN
+				tempString$ = MID$(sourceDir$,1,LEN(sourceDir$)-1)
+			ELSE
+				tempString$ = sourceDir$
+			END IF
+			CreateIniKeyValue destCfgFile$,"directories","InstallFromDir",tempString$, cmoOverwrite
+			IF INSTR(LEN(destDir$),destDir$,"\") > 0 THEN
+				tempString$ = MID$(destDir$,1,LEN(destDir$)-1)
+			ELSE
+				tempString$ = destDir$
+			END IF
+			CreateIniKeyValue destCfgFile$,"directories","InstallToDir",tempString$, cmoOverwrite
+
+        ''[install] section contains directory listings with a trailing \
+			IF INSTR(LEN(sourceDir$),sourceDir$,"\") > 0 THEN
+				tempString$ = sourceDir$
+			ELSE
+				tempString$ = sourceDir$+"\"
+			END IF
+			CreateIniKeyValue destCfgFile$,"install","InstallFromDir",tempString$, cmoOverwrite
+
+			IF INSTR(LEN(destDir$),destDir$,"\") > 0 THEN
+				tempString$ = destDir$
+			ELSE
+				tempString$ = destDir$+"\"
+            END IF
+			CreateIniKeyValue destCfgFile$,"install","InstallToDir",tempString$, cmoOverwrite
+
+			CreateIniKeyValue destCfgFile$, "install","InstallFromDrive", MID$(sourceDir$,1,1), cmoOverwrite
+			CreateIniKeyValue destCfgFile$, "install","InstallToDrive", MID$(destDir$,1,1), cmoOverwrite
+		ELSE
+			destCfgFile$ = ""
+		END IF
+	ELSEIF destCfgFile$ <> "" THEN
+		CreateIniKeyValue destCfgFile$,"directories","MediaBuildDir",destDir$,cmoOverwrite
+	END IF
+
+	''INSTALL FONTS - IF NECESSARY
+	IF fontsToInstall% = 0 THEN
+		GOTO FONTINSTALLEND
+	END IF
+FONTINSTALL:
+	fontInstallError% = InstallFonts(destDir$,destCfgFile$,winIniBkpFile$)
+	IF fontInstallError% > 0 THEN
+		sz$ = UIStartDlg(CUIDLL$, FONTERROR, "FQuitDlgProc", 0, "")
+		IF sz$ = "EXIT" THEN
+        	UIPopAll
+        	ERROR STFQUIT
+    	ELSEIF sz$ = "REACTIVATE" THEN
+			GOTO FONTINSTALL
+    	ELSE
+        	UIPop 1
+		END IF
+		AddListItem "IncompleteInstall", "Fonts are not installed correctly for this product."
+	END IF
+    fontsInstalled% = 1
+FONTINSTALLEND:
+
+
+	''INSTALL PROGRAM GROUP AND PROGRAM GROUP ITEMS
+	 IF build$ = "" THEN
+		progGroup$ = GetIniKeyString(destCfgFile$,"proggroup","groupname")
+		CreateProgmanGroup progGroup$,"",cmoVital
+
+
+IF INSTR(LEN(destDir$),destDir$,"\") > 0 THEN
+	tempString$ = MID$(destDir$,1,LEN(destDir$)-1)
+ELSE
+	tempString$ = destDir$
+END IF
+SetSymbolValue "INSTALLTODIR$",tempString$
+IF INSTR(LEN(sourceDir$),sourceDir$,"\") > 0 THEN
+	tempString$ = MID$(sourceDir$,1,LEN(sourceDir$)-1)
+ELSE
+	tempString$ = sourceDir$
+END IF
+SetSymbolValue "INSTALLFROMDIR$",tempString$
+
+prevCur% = ShowWaitCursor()
+i% = 0
+key$ = "pgi1"
+pgiItem$ = GetIniKeyString(destCfgFile$,key$,"pgicaption")
+WHILE (pgiItem$ <> "")
+	pgiCmd$ = GetIniKeyString(destCfgFile$,key$,"pgicmd")
+pgiCmd$ = InstantString(pgiCmd$)
+	pgiIcon$ = GetIniKeyString(destCfgFile$,key$,"pgiicon")
+pgiIcon$ = InstantString(pgiIcon$)
+	CreateProgmanItem progGroup$,""""+pgiItem$+"""",pgiCmd$,pgiIcon$,cmoOverwrite
+	i% = i% + 1
+	key$ = "pgi"+RTRIM$(LTRIM$(STR$(i%)))
+	pgiItem$ = GetIniKeyString(destCfgFile$,key$,"pgicaption")
+WEND
+
+''RestoreCursor prevCur%
+
+ShowProgmanGroup progGroup$,1,cmoNone
+''		IF GetWindowsMajorVersion() = 3 AND GetWindowsMinorVersion() < 20 THEN
+''			anerror% = PGInstall(destCfgFile$,1,1)
+''ShowProgmanGroup progGroup$,1,cmoNone
+''		ELSE
+''			anerror% = PGInstall(destCfgFile$,1,6)
+''		END IF
+
+RestoreCursor prevCur%
+	END IF
+
+	IF INSTR(LEN(sourceDir$),sourceDir$,"\") > 0 THEN
+		varTable$ = "INSTALLFROMDIR|"+MID$(sourceDir$,1,LEN(sourceDir$)-1)
+	ELSE
+		varTable$ = "INSTALLFROMDIR|"+sourceDir$
+	END IF
+	IF destDir$ <> "" THEN
+		IF INSTR(LEN(destDir$),destDir$,"\") > 0 THEN
+			varTable$ = varTable$+"|INSTALLTODIR|"+MID$(destDir$,1,LEN(destDir$)-1)
+		ELSE
+			varTable$ = varTable$+"|INSTALLTODIR|"+destDir$
+		END IF
+	END IF
+
+	result% = CreateRegEntries(cfgFile$,"",varTable$,"|")
+	''DoRegistrations
+
+
+QUIT:
+    ON ERROR GOTO ERRQUIT
+
+	IF ERR = 0 THEN
+		GOTO GOODQUIT
+	ELSE
+		GOTO BADQUIT
+    ENDIF
+
+GOODQUIT:
+	IF GetListLength("IncompleteInstall") THEN
+		SetSymbolValue "ListItemsIn", ""
+		FOR i% = 1 TO GetListLength("IncompleteInstall") STEP 1
+			AddListItem "ListItemsIn", GetListItem("IncompleteInstall",i%)
+		NEXT
+INCOMPLETEQUITL1:
+		sz$ = UIStartDlg(CUIDLL$,EXITINCOMPLETE,"FList0DlgProc",0,"")
+		IF sz$ = "REACTIVATE" THEN
+			GOTO INCOMPLETEQUITL1
+		END IF
+		UIPop 1
+		GOTO ENDINSTALL
+	ELSEIF midiCmdLine$ <> "" THEN
+		concatedCmdLine$ = midiCmdLine$
+		sucCom1$ = sucCom$
+		dlg% = EXITSUCCESS1
+		IF qtwCmdLine$ <> "" THEN
+			concatedCmdLine$ = concatedCmdLine$ + ";" + qtwCmdLine$
+			sucCom2$ = qtwSucComm$
+			dlg% = EXITSUCCESS2
+			GOTO TWOCHAIN
+		ELSEIF cmdLine$ <> "" THEN
+			concatedCmdLine$ = concatedCmdLine$ + ";" + cmdLine$
+			sucCom2$ = sucCom$
+			dlg% = EXITSUCCESS2
+			GOTO TWOCHAIN
+		END IF
+		GOTO ONECHAIN
+	ELSEIF qtwCmdLine$ <> "" THEN
+		concatedCmdLine$ = qtwCmdLine$
+		sucCom1$ = qtwSucComm$
+		dlg% = EXITSUCCESS1
+		IF cmdLine$ <> "" THEN
+			concatedCmdLine$ = concatedCmdLine$ + ";" + cmdLine$
+			sucCom2$ = sucCom$
+			dlg% = EXITSUCCESS2
+			GOTO TWOCHAIN
+		END IF
+		GOTO ONECHAIN
+	ELSEIF cmdLine$ <> "" THEN
+		concatedCmdLine$ = cmdLine$
+		sucCom1$ = sucCom$
+		dlg% = EXITSUCCESS1
+		GOTO ONECHAIN
+	ELSE
+GOODQUITL0:
+		sucComID$ = LTRIM$(STR$(SUCCESSCOMMENT))
+		AddListItem "VarStringID", sucComID$
+		IF sucCom$ = "" THEN
+			sucCom$ = "Have Fun!"
+		END IF
+		SetSymbolValue sucComID$,sucCom$
+
+		sz$ = UIStartDlg(CUIDLL$,EXITSUCCESS,"FList0DlgProc",0,"")
+		IF sz$ = "REACTIVATE" THEN
+			GOTO GOODQUITL0
+		END IF
+		UIPop 1
+		GOTO ENDINSTALL
+	END IF
+
+TWOCHAIN:
+	sucComID2$ = LTRIM$(STR$(SUCCESSCOMMENT2))
+	AddListItem "VarStringID", sucComID2$
+	SetSymbolValue sucComID2$,sucCom2$
+ONECHAIN:
+	sucComID1$ = LTRIM$(STR$(SUCCESSCOMMENT1))
+	AddListItem "VarStringID", sucComID1$
+	SetSymbolValue sucComID1$,sucCom1$
+
+	chainID$ = LTRIM$(STR$(CHAINTEXT))
+	AddListItem "VarStringID", chainID$
+
+GOODQUITL1:
+	IF canChain$ = "Y" THEN
+	''SET VARIABLES FOR COMMAND LINE
+	''SET COMMAND LINE
+	''SEND COMMAND LINE TO PARENT EXECUTABLE
+		IF INSTR(LEN(destDir$),destDir$,"\") > 0 THEN
+			tempString$ = MID$(destDir$,1,LEN(destDir$)-1)
+		ELSE
+			tempString$ = destDir$
+		END IF
+		SetSymbolValue "INSTALLTODIR$",tempString$
+		IF INSTR(LEN(sourceDir$),sourceDir$,"\") > 0 THEN
+			tempString$ = MID$(sourceDir$,1,LEN(sourceDir$)-1)
+		ELSE
+			tempString$ = sourceDir$
+		END IF
+		SetSymbolValue "INSTALLFROMDIR$",tempString$
+SetSymbolValue "INSTALLFROMDRIVE$",MID$(sourceDir$,1,2)
+		SetSymbolValue "WINDOWS$",MID$(GetWindowsDir(),1,LEN(GetWindowsDir())-1)
+		SetSymbolValue "WINSYS$",MID$(GetWindowsSysDir(),1,LEN(GetWindowsSysDir())-1)
+		anerror% = NotifyChain(chainWindow%,0,InstantString(concatedCmdLine$))
+		chainTxt$ = "Press OK to continue"
+	ELSE
+		chainTxt$ = "Please refer to the documentation for instructions on how to do this."
+	END IF
+
+	SetSymbolValue chainID$,chainTxt$
+
+	sz$ = UIStartDlg(CUIDLL$,dlg%,"FList0DlgProc",0,"")
+	IF sz$ = "REACTIVATE" THEN
+		GOTO GOODQUITL1
+	END IF
+	UIPop 1
+ENDINSTALL:
+	END
+
+BADQUIT:
+	IF ERR = STFQUIT THEN
+		dlg% = EXITQUIT
+	ELSE
+		dlg% = EXITFAILURE
+	END IF
+	DeinstFiles
+BADQUITL1:
+	sz$ = UIStartDlg(CUIDLL$, dlg%, "FInfo0DlgProc", 0, "")
+	IF sz$ = "REACTIVATE" THEN
+		GOTO BADQUITL1
+	END IF
+	UIPop 1
+	END
+
+ERRQUIT:
+	DeinstFiles
+	i% = DoMsgBox("Setup sources were corrupted, call 555-1212!", "Setup Message", MB_OK+MB_TASKMODAL+MB_ICONHAND)
+	END
+
+
+TOOBIG:
+    sz$ = UIStartDlg(CUIDLL$, TOOBIG, "FInfo0DlgProc", 0, "")
+    IF sz$ = "REACTIVATE" THEN
+		GOTO TOOBIG
+    END IF
+    UIPop 1
+    RETURN
+
+
+
+BADPATH:
+	 sz$ = UIStartDlg(CUIDLL$, BADPATH, "FInfo0DlgProc", 0, "")
+    IF sz$ = "REACTIVATE" THEN
+		GOTO BADPATH
+    END IF
+    UIPop 1
+    RETURN
+
+
+
+ASKQUIT:
+	SetSymbolValue "OFFSETVERTPERC", "-20"
+	SetSymbolValue "OFFSETHORZPERC", "10"
+	sz$ = UIStartDlg(CUIDLL$, ASKQUIT, "FQuitDlgProc", 0, "")
+	RemoveSymbol "OFFSETHORZPERC"
+	SetSymbolValue "OFFSETVERTPERC", "-10"
+
+    IF sz$ = "EXIT" THEN
+        UIPopAll
+        ERROR STFQUIT
+    ELSEIF sz$ = "REACTIVATE" THEN
+        GOTO ASKQUIT
+    ELSE
+        UIPop 1
+    END IF
+	RETURN
+
+
+GETPATH:
+	SetSymbolValue "EditTextIn", destDir$
+    SetSymbolValue "EditFocus", "END"
+GETPATHL1:
+    sz$ = UIStartDlg(CUIDLL$, DESTPATH, "FEditDlgProc", APPHELP, HELPPROC$)
+
+    IF sz$ = "CONTINUE" THEN
+		olddest$ = destDir$
+		destDir$ = GetSymbolValue("EditTextOut")
+
+        ''Validate new path.
+		IF IsDirWritable(destDir$) = 0 THEN
+			GOSUB BADPATH
+            GOTO GETPATHL1
+        END IF
+        UIPop 1
+
+        ''Truncate display if too long.
+		IF LEN(destDir$) > 23 THEN
+			ReplaceListItem "DriveStatusText", 7, MID$(destDir$, 1, 23)+"..."
+        ELSE
+			ReplaceListItem "DriveStatusText", 7, destDir$
+        END IF
+
+        olddest$ = ""
+
+		result% = SetDriveStatus(1)
+		GOTO CUSTINST
+    ELSEIF sz$ = "REACTIVATE" THEN
+		GOTO GETPATHL1
+    ELSEIF sz$ = "EXIT" THEN
+        GOSUB ASKQUIT
+        GOTO GETPATHL1
+	 ELSEIF sz$ = "BACK" THEN
+        UIPop 1
+		GOTO CUSTINST
+	ELSE
+		UIPop 1
+        GOTO CUSTINST
+	END IF
+
+
+
+'**
+'** Purpose:
+'**     Appends a file name to the end of a directory path,
+'**     inserting a backslash character as needed.
+'** Arguments:
+'**     szDir$  - full directory path (with optional ending "\")
+'**     szFile$ - filename to append to directory
+'** Returns:
+'**     Resulting fully qualified path name.
+'*************************************************************************
+FUNCTION MakePath (szDir$, szFile$) STATIC AS STRING
+    IF szDir$ = "" THEN
+        MakePath = szFile$
+    ELSEIF szFile$ = "" THEN
+        MakePath = szDir$
+    ELSEIF MID$(szDir$, LEN(szDir$), 1) = "\" THEN
+        MakePath = szDir$ + szFile$
+    ELSE
+        MakePath = szDir$ + "\" + szFile$
+    END IF
+END FUNCTION
+
+
+FUNCTION InstantString (varStr$) STATIC AS STRING
+
+	newStr$ = ""
+
+	strLen% = LEN(varStr$)
+	IF strLen = 0 THEN
+		GOTO INSTANTSTRINGEXIT
+	END IF
+
+	strHead% = 1
+	WHILE (strHead% > 0)
+		dollarPos1% = INSTR(strHead%,varStr$,"$")
+		IF dollarPos1% > 0 THEN
+			newStr$ = newStr$+MID$(varStr$,strHead%,dollarPos1%-strHead%)
+			dollarPos2% = INSTR(dollarPos1% + 1,varStr$,"$")
+			IF dollarPos2% > 0 THEN
+				var$ = MID$(varStr$,dollarPos1% + 1,dollarPos2% - dollarPos1%)
+				strHead% = dollarPos2%+1
+				IF strHead% > LEN(varStr$) THEN
+					strHead% = 0
+				END IF
+			ELSE
+				var$ = MID$(varStr$,dollarPos1% + 1)
+				strHead% = 0
+			END IF
+
+			newStr$ = newStr$+GetSymbolValue(UCASE$(var$))
+		ELSE
+			newStr$ = newStr$+MID$(varStr$,strHead%)
+			strHead% = 0
+		END IF
+	WEND
+
+INSTANTSTRINGEXIT:
+	InstantString = newStr$
+
+END FUNCTION
+
+
+FUNCTION AddDirToCopyList(theFile$,dir$,srcDir$,dstDir$,silent%) STATIC AS INTEGER
+
+	result% = 0
+
+	IF srcDir$ = "" THEN
+		GOTO ADDDIRTOCOPYLISTEXIT
+	END IF
+
+	IF dstDir$ = "" THEN
+		GOTO ADDDIRTOCOPYLISTEXIT
+	END IF
+
+	baseSym$ = MID$(dir$,2,6)
+	SetSymbolValue baseSym$,srcDir$
+	newSrcDir$ = InstantString(dir$)
+	SetSymbolValue baseSym$,dstDir$
+	newDstDir$ = InstantString(dir$)
+
+	IF dir$ = "$BASE0$" THEN
+''	IF MID$(dir$,1,1) = "$" AND LEN(dir$) = 7 THEN
+		RemoveSymbol "DIRLIST"
+		RemoveSymbol "NEWDIRLIST"
+	END IF
+
+	IF DoesDirExist(newDstDir$) = 0 THEN
+		AddListItem "DIRLIST",""
+		AddListItem "NEWDIRLIST",dir$
+	ELSE
+		AddListItem "DIRLIST",dir$
+		AddListItem "NEWDIRLIST",""
+	END IF
+
+	IF DoesIniSectionExist(theFile$,dir$) = 1 THEN
+		IF silent% = 0 THEN
+	    	i% = 0
+			key$ = "f"+RTRIM$(LTRIM$(STR$(i%)))
+			curFile$ = GetIniKeyString(theFile$,dir$,""""+key$+"""")
+	        curFile$ = GetNthFieldFromIniString(curFile$,2)
+			halt% = 0
+
+			SetSymbolValue "CENTERWINDOW", "BOTH"
+
+			WHILE curFile$ <> "" AND halt% = 0
+				fileExists% = DoesFileExist(MakePath(newDstDir$,curFile$),femExists)
+''				fileExists% = DoesFileExist(newDstDir$+"\"+curFile$,femExists)
+				IF fileExists% = 1 AND replaceAll% = 0 THEN
+					SetSymbolValue filePathID$,newDstDir$+"\"+curFile$
+					sz$ = UIStartDlg(CUIDLL$, DUPFILE, "FInfoDlgProc", 0, "")
+					IF sz$ = "CONTINUE" THEN ''this translates to "replace"
+						AddSectionKeyFileToCopyList dir$,key$,newSrcDir$,newDstDir$
+					ELSEIF sz$ = "EXIT" THEN ''this translates to "replace ALL"
+						AddSectionKeyFileToCopyList dir$,key$,newSrcDir$,newDstDir$
+						replaceAll% = 1
+					ELSEIF sz$ = "CANCEL" THEN ''this translates to "stop"
+						halt% = 1
+						result% = 1
+						UIPop 1
+						GOTO ADDDIRTOCOPYLISTEXIT
+					END IF
+					UIPop 1
+				ELSE
+					AddSectionKeyFileToCopyList dir$,key$,newSrcDir$,newDstDir$
+				END IF
+
+				i% = i% + 1
+				key$ = "f"+RTRIM$(LTRIM$(STR$(i%)))
+				curFile$ = GetIniKeyString(theFile$,dir$,""""+key$+"""")
+				curFile$ = GetNthFieldFromIniString(curFile$,2)
+			WEND
+		ELSE
+			AddSectionFilesToCopyList dir$,newSrcDir$,newDstDir$
+		END IF
+	END IF
+
+	IF DoesIniSectionExist(theFile$,dir$+"\") = 1 THEN
+		subDirStr$ = GetIniKeyString(theFile$,dir$+"\","""subdirs""")
+		i% = 1
+		subDir$ = GetNthFieldFromIniString(subDirStr$,i%)
+		WHILE subDir$ <> ""
+			subDir$ = dir$+"\"+subDir$
+			result% = AddDirToCopyList(theFile$,subDir$,srcDir$,dstDir$,silent%)
+			IF result% = 1 THEN
+				GOTO ADDDIRTOCOPYLISTEXIT
+            END IF
+			i% = i% + 1
+			subDir$ = GetNthFieldFromIniString(subDirStr$,i%)
+		WEND
+	END IF
+
+ADDDIRTOCOPYLISTEXIT:
+	AddDirToCopyList = result%
+END FUNCTION
+
+
+FUNCTION SetDriveStatus(silent%) STATIC AS INTEGER
+
+''Drive Status Text fields:
+''	1:	installation drive
+''	2:	install drive space required
+''	3:	install drive space available
+''	4:	Windows drive
+''	5:	Windows drive space required
+''	6:	Windows drive space available
+''	7:	Installation path
+
+	result% = 0
+
+	''CALCULATE COSTS
+	ClearCopyList
+	replaceAll% = 0
+	result% = AddDirToCopyList (szInf$,"$BASE0$",sourceDir$,destDir$,silent%)
+	IF result% = 1 THEN
+		ClearCopyList
+		GOTO SETDRIVESTATUSEXIT
+	END IF
+
+	''ADD FILES DESTINED FOR THE WINDOWS DIRECTORY
+	''SPECIAL NOTE: THIS CRAPPY MSSETUP CAN'T DEAL WITH THE PATH WINDOWS\SYSTEM,
+	''SO FILES DESTINED FOR THE WINDOWS\SYSTEM DIRECTORY SHOULD BE INCLUDED HERE
+	IF wingNeeded% = 1 THEN
+		IF GetWindowsMajorVersion() = 3 AND GetWindowsMinorVersion() < 20 THEN
+			AddSectionFilesToCopyList "$WINDOWS$",sourceDir$,GetWindowsDir()
+		END IF
+	END IF
+
+	i% = 0
+	tmpSrcDirStr$ = srcDirStr$
+	WHILE tmpSrcDirStr$ <> ""
+		temp% = INSTR(tmpSrcDirStr$,",")
+        IF temp% > 0 THEN
+			curSrcDir$ = MID$(tmpSrcDirStr$,1,temp%-1)
+			tmpSrcDirStr$ = MID$(tmpSrcDirStr$,temp%+1)
+		ELSE
+			curSrcDir$ = MID$(tmpSrcDirStr$,1)
+			tmpSrcDirStr$ = ""
+		END IF
+		i% = i% + 1
+		baseStr$ = "$BASE"+RTRIM$(LTRIM$(STR$(i%)))+"$"
+		result% = AddDirToCopyList (szInf$,baseStr$,curSrcDir$,destDir$,silent%)
+		IF result% = 1 THEN
+	    	ClearCopyList
+			GOTO SETDRIVESTATUSEXIT
+		END IF
+	WEND
+	ndrive% = ASC(ucase$(WINDRIVE$)) - ASC("A") + 1
+	''Add extra space needed for program manager icons
+	ReplaceListItem "ExtraCosts", ndrive%, RTRIM$(LTRIM$(STR$(GetNetPGSize(cfgFile$))))
+
+	ExcessNeeded& = GetCopyListCost("ExtraCosts", "AppNeeds", "")
+
+	drive$ = MID$(destDir$, 1, 1)
+	ndrive% = ASC(ucase$(drive$)) - ASC("A") + 1
+    ''Add extra 5KB at destination just to be on the safe side
+	ReplaceListItem "ExtraCosts", ndrive%, "5120"
+
+	cost& = VAL(GetListItem("AppNeeds", ndrive%))
+	IF cost& < 0 THEN
+		cost& = 0
+	END IF
+	free& = GetFreeSpaceForDrive(drive$)
+	IF free& < 0 THEN
+		free& = 0
+	END IF
+
+	''take care of errors caused by block size rounding
+	''e.g., the "free" value may be lower than reported - force these situations
+	''into an "excess needed" situation, which is safer
+	IF free& <> 0 THEN
+''		IF (free& - cost&) < GetClusterSize(drive$) THEN
+''			free& = cost&
+''		END IF
+		IF free& = cost& THEN
+			free& = free& - 1
+			ExcessNeeded& = 1
+		END IF
+	END IF
+
+	ReplaceListItem "DriveStatusText", 1, drive$ + ":"
+	ReplaceListItem "DriveStatusText", 2, STR$(cost& / 1024) + " K"
+	ReplaceListItem "DriveStatusText", 3, STR$(free& / 1024) + " K"
+
+	IF drive$ <> WINDRIVE$ THEN
+        ndrive% = ASC(ucase$(WINDRIVE$)) - ASC("A") + 1
+		cost& = VAL(GetListItem("AppNeeds", ndrive%))
+		IF cost& < 0 THEN
+			cost& = 0
+		END IF
+	ELSE
+    	cost& = 0
+	END IF
+	IF cost& <> 0 THEN
+    	free& = GetFreeSpaceForDrive(WINDRIVE$)
+
+		''take care of errors caused by block size rounding
+		''e.g., the "free" value may be lower than reported - force these situations
+		''into an "excess needed" situation, which is safer
+		IF free& = cost& THEN
+			free& = free& - 1
+			ExcessNeeded& = 1
+		END IF
+
+		ReplaceListItem "DriveStatusText", 4, WINDRIVE$ + ":"
+		ReplaceListItem "DriveStatusText", 5, STR$(cost& / 1024) + " K"
+        ReplaceListItem "DriveStatusText", 6, STR$(free& / 1024) + " K"
+	ELSE
+		ReplaceListItem "DriveStatusText", 4, ""
+		ReplaceListItem "DriveStatusText", 5, ""
+		ReplaceListItem "DriveStatusText", 6, ""
+	END IF
+
+SETDRIVESTATUSEXIT:
+	SetDriveStatus = result%
+END FUNCTION
+
+
+SUB DeinstFiles STATIC
+
+	listLen% = GetListLength("DIRLIST")
+	IF listLen% = 0 THEN
+		GOTO DEINSTFILESEXIT
+	END IF
+
+	 clearDirList% = 1
+	clearNewDirList% = 1
+	SetSymbolValue "BASE0$",destDir$
+	FOR i% = listLen% TO 1 STEP -1
+		theDir$ = GetListItem("DIRLIST",i%)
+		IF theDir$ <> "" THEN
+			theNewDir$ = GetListItem("NEWDIRLIST",i%)
+			IF theNewDir$ <> "" THEN
+				result% = DeleteDirectory(theDir$,1)
+				IF result% = 1 THEN
+					clearNewDirList% = 0
+				ELSE
+					ReplaceListItem "DIRLIST",i%,""
+				END IF
+			ELSE
+				clearDirList% = 0
+                IF filesInstalled% = 1 THEN
+					junk% = DeinstallFiles(InstantString(theDir$),szInf$,theDir$,0)
+				END IF
+			END IF
+		END IF
+	NEXT
+	RemoveSymbol "BASE0$"
+	IF clearNewDirList% = 1 THEN
+		RemoveSymbol "NEWDIRLIST"
+		IF clearDirList% = 1 THEN
+			RemoveSymbol "DIRLIST"
+		END IF
+	END IF
+
+	filesInstalled% = 0
+
+DEINSTFILESEXIT:
+END SUB
+
+
+FUNCTION ParseCommand (commFlag$) STATIC AS STRING
+
+	ParseCommand = ""
+
+	a% = INSTR(COMMAND$,"/"+commFlag$)
+	IF a% = 0 THEN
+		GOTO PARSECOMMANDEXIT
+    END IF
+
+	b% = INSTR(a%+1,COMMAND$,"/")
+    IF b% > 0 THEN
+		temp$ = MID$(COMMAND$,a%,b%-a%)
+		C$ = MID$(COMMAND$,b%)
+	ELSE
+		temp$ = MID$(COMMAND$,a%)
+        C$ = ""
+	END IF
+    IF a% > 1 THEN
+		D$ = MID$(COMMAND$,1,a%-1)
+	ELSE
+		D$ = ""
+	END IF
+	COMMAND$ = D$+C$
+	ParseCommand = RTRIM$(LTRIM$(MID$(temp$,3)))
+
+PARSECOMMANDEXIT:
+END FUNCTION
+
+
+SUB DoRegistrations STATIC
+
+	MakeListFromSectionKeys "REGLIST","REGEDIT"
+	listLen% = GetListLength("REGLIST")
+	IF listLen% = 0 THEN
+		GOTO DOREGISTRATIONSEXIT
+	END IF
+
+	FOR i%=1 TO listLen% STEP 1
+		key$ = GetListItem("REGLIST",i%)
+		keyValue$ = GetIniKeyString(szInf$,"REGEDIT",""""+key$+"""")
+
+		IF INSTR(LEN(sourceDir$),destDir$,"\") > 0 THEN
+			tempString$ = MID$(destDir$,1,LEN(destDir$)-1)
+		ELSE
+			tempString$ = destDir$
+		END IF
+		SetSymbolValue "INSTALLTODIR$",tempString$
+		IF INSTR(LEN(sourceDir$),sourceDir$,"\") > 0 THEN
+			tempString$ = MID$(sourceDir$,1,LEN(sourceDir$)-1)
+		ELSE
+			tempString$ = sourceDir$
+		END IF
+		SetSymbolValue "INSTALLFROMDIR$",tempString$
+		SetSymbolValue "WINDOWS$",MID$(GetWindowsDir(),1,LEN(GetWindowsDir())-1)
+		SetSymbolValue "WINSYS$",MID$(GetWindowsSysDir(),1,LEN(GetWindowsSysDir())-1)
+
+		CreateRegKey key$
+		CreateRegKeyValue key$,InstantString(keyValue$)
+    NEXT
+
+DOREGISTRATIONSEXIT:
+END SUB

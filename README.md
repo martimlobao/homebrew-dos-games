@@ -18,6 +18,7 @@ brew install --cask jumpstart-1st-grade
 brew install --cask jumpstart-kindergarten
 brew install --cask mission-think
 brew install --cask ods-vol1
+brew install --cask orlys-draw-a-story
 brew install --cask ready-to-read-with-pooh
 ```
 
@@ -61,6 +62,14 @@ Ohio Distinctive Software Vol. I is a 1997 teacher's edition compilation contain
 
 ![Ohio Distinctive Software Vol. I](/static/ods-vol1.png)
 
+### Orly's Draw-A-Story
+
+Orly's Draw a Story is a video game released in 1997 by Broderbund aimed at children from 5 to 10. It focuses around the two main characters, Orly, an 8-year-old girl and her anthropomorphic talking frog friend Lancelot who lives in Jamaica. The game features four unique stories narrated by Orly. The player is able to illustrate each of the stories with their own paintings, either original drawings or using ready-prepared objects. As Orly tells the story, the user is asked to create an item such as a friend for a flying monster or a birthday present to give to Orly.
+
+**[📥 Download Orly's Draw-A-Story](https://github.com/martimlobao/homebrew-dos-games/releases/download/ods-vol1-v1.0.0/orlys-draw-a-story.app.zip)**
+
+![Orly's Draw-A-Story](/static/orlys-draw-a-story.png)
+
 ### Ready to Read with Pooh
 
 Ready to Read with Pooh is a 1997 interactive CD-ROM video game developed by Disney Interactive's Victoria studio that helps children from ages three to six learn to read. There are nine activities in the game. When the player completes an activity successfully, they will receive an item that goes into a treehouse.
@@ -83,7 +92,11 @@ ClassicReload games often stream their content dynamically. To retrieve the file
 * Download the relevant archive files manually (for large `CDROM.zip` files which are streamed, use the `download_cdrom.py` script).
 * Also locate and download the game's **metadata XML file**, which may describe how drives are mounted, what the entrypoint is, and required config options.
 
-> Tip: The `metadata.xml` file will provide information on which folders are mounted as C:, D:, etc., and what the game's startup command is (e.g., `AUTORUN.BAT`, `INSTALL.EXE`, etc.).
+> [!IMPORTANT]
+The `metadata.xml` file will provide information on which folders are mounted as C:, D:, etc., and what the game's startup command is (e.g., `AUTORUN.BAT`, `INSTALL.EXE`, etc.).
+<!-- markdownlint-disable MD028 --><!-- markdownlint-enable MD028 -->
+> [!TIP]
+It is also possible to install games which are not available on ClassicReload. Doing so usually requires a `.cue` and `.bin` file, followed by mounting the virtual CD drive and installing the game to disk using something like `IMGMOUNT E GAME.cue -t iso -fs iso`. To have the game start automatically, create a `WINSTART.BAT` file such as [the one using for ODS Vol I](/games/ods-vol1/Ohio%20Distinctive%20Software%20Vol.%20I.app/Contents/Resources/GAMEDATA/windows/WINSTART.BAT).
 
 ### Set up the `.app` bundle structure
 

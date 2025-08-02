@@ -1,0 +1,52 @@
+[MidiMap.TargetDevices]
+;Known devices
+'Ad Lib' = 1				;8 voice, KBP #16
+'Voyetra Super Sapi FM Driver' = 1	;8 voice, KBP #16
+'Sound Blaster AWE 32 MIDI Synth' = 4	;16 voice, KBP #10
+'SB AWE32 MIDI Synth' = 4
+'Creative OPL3 FM' = 2
+'Yamaha OPL2/OPL3 Synthesis' = 2
+
+;Unknown devices
+unknown device (4+ voices)	= -1	;8 voice, KBP #16
+unknown device (19+ voices)	= -4	;16 voice, KBP #10
+unknown device (port)		= -4	;16 voice, KBP #10
+
+
+[MidiMap.TargetDeviceInfo]
+;General MIDI device target info:
+1	= 012345678XXXXXXF;16;1;1	;mute channels 10-15
+2	= 012345678XXXXXX9;10;1;1	;mute channels 10-15, map 16 to 10
+3	= 012345678XABCDEF;16;1;1	;mute channel 10
+4	= 0123456XX9ABCDEX;10;1;1	;mute channel 16
+;unknown device target info:
+-1	= 012345678XXXXXXF;16;1;1	;mute channels 10-15
+-2	= 012345678XXXXXX9;10;1;1	;mute channels 10-15, map 16 to 10
+-3	= 012345678XABCDEF;16;1;1	;mute channel 10
+-4	= 0123456XX9ABCDEX;10;1;1	;mute channel 16
+
+[Audio]
+defaultMidiDevice=Ad Lib
+fCacheDefaultMIDIDevice=true
+
+[WaveMix]
+fEnable = true
+ulFrameRate = 22050
+uSampleSize = 8
+fStereo = false
+
+[WaveMix.DeviceInfo (Win3.X)]
+'16-bit Audio Playback' = 16;2048;4096;0;22050
+'Creative Labs Sound Blaster 1.5' = 16;2048;4096;0;22050
+'ESS AudioDrive Playback' = 16;3072;6144;0;22050
+'OPTi MAD16 Pro Sound Wave Playb' = 16;2048;4096;0;22050
+'Orchid SW32 System Playback' = 16;2048;4096;0;22050
+'SB16 Wave Out' = 16;2048;4096;0;22050
+'SoundMan Wave Audio' = 16;3072;6144;0 22050
+'Soundscape (Synth) Wave A' = 16;1024;5120;0;22050
+'Tandy VIS-compatible Wave' = 16;3072;6144;0;22050
+'Windows Sound System Playback' = 16;3072;6144;0;22050
+'UltraSound Waveform Output' = 6;4096;8192;16384;44100;16
+
+[Graphics]
+fEnableWinG = TRUE

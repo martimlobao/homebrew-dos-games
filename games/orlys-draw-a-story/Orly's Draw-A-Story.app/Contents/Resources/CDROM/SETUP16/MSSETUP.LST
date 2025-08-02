@@ -1,0 +1,27 @@
+[Params]
+WndTitle=Orly's Draw-A-Story
+WndMess=Initializing setup16...
+TmpDirSize=500
+TmpDirName=~msstfqf.t
+CmdLine=_mstest bbinstal.mst /C "/I SETUP16.INF /S %s %s"
+DrvModName=DSHELL
+
+[Files]
+setupapi.inc=setupapi.inc
+msdetect.inc=msdetect.inc
+msregdb.inc=msregdb.inc
+mscomstf.dll=mscomstf.dll
+msinsstf.dll=msinsstf.dll
+msuilstf.dll=msuilstf.dll
+msshlstf.dll=msshlstf.dll
+mscuistf.dll=mscuistf.dll
+msdetstf.dll=msdetstf.dll
+_mstest.exe=_mstest.exe
+_mssetup.exe=_mssetup.exe
+bbinstal.mst=bbinstal.mst
+brodfont.dll=brodfont.dll
+brodutil.dll=brodutil.dll
+brodmidi.dll=brodmidi.dll
+brodpgi.dll=brodpgi.dll
+brodreg.dll=brodreg.dll
+SETUP16.INF=SETUP16.INF
