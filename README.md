@@ -17,6 +17,7 @@ brew tap martimlobao/dos-games
 brew install --cask jumpstart-1st-grade
 brew install --cask jumpstart-kindergarten
 brew install --cask mission-think
+brew install --cask ods-vol1
 brew install --cask ready-to-read-with-pooh
 ```
 
@@ -30,11 +31,15 @@ Note that when running these games for the first time, macOS will complain that 
 
 JumpStart 1st Grade is a PC game created by Knowledge Adventure in 1995 intended to teach a first grade curriculum. It was the first appearance of Frankie, a brown, anthropomorphic dachshund dog who would go on to become the mascot of the JumpStart series.
 
+**[📥 Download JumpStart 1st Grade](https://github.com/martimlobao/homebrew-dos-games/releases/download/jumpstart-1st-grade-v1.0.0/jumpstart-1st-grade.app.zip)**
+
 ![JumpStart 1st Grade](/static/jumpstart-1st-grade.png)
 
 ### JumpStart Kindergarten
 
 JumpStart Kindergarten is an educational video game developed by Fanfare Software and released by Knowledge Adventure on the MS-DOS platform in 1994. It was the first product released in the JumpStart series and is intended to teach kindergarten students. According to the Knowledge Adventure founder Bill Gross, it is the first educational software program that covers the entire kindergarten curriculum.
+
+**[📥 Download JumpStart Kindergarten](https://github.com/martimlobao/homebrew-dos-games/releases/download/jumpstart-kindergarten-v1.0.0/jumpstart-kindergarten.app.zip)**
 
 ![JumpStart Kindergarten](/static/jumpstart-kindergarten.png)
 
@@ -44,17 +49,23 @@ JumpStart Kindergarten is an educational video game developed by Fanfare Softwar
 
 Mission T.H.I.N.K. (Thinking Hard Inspires New Knowledge) is the final addition to the Super Solvers series created by The Learning Company. Morty Maxwell tries to take over the Shady Glen Game Factory with help of the Metal Minions. The game cultivates critical thinking skills by encouraging players to solve puzzles and create strategies. The original score in the five levels is by the famous fusion ensemble Yellowjackets.
 
+**[📥 Download Mission T.H.I.N.K.](https://github.com/martimlobao/homebrew-dos-games/releases/download/mission-think-v1.0.0/mission-think.app.zip)**
+
 ![Mission T.H.I.N.K.](/static/mission-think.png)
 
 ### Ohio Distinctive Software Vol. I
 
 Ohio Distinctive Software Vol. I is a 1997 teacher's edition compilation containing four educational games from Ohio Distinctive Software, a company founded in 1987 that specialized in children's educational software. The collection features the robotic character Blit, with his distinctive green and yellow antennae, across four separate games: ODS Carnival Math, ODS Air Explorer, ODS Robot Challenge, and ODS Amazing Art Corner. This compilation was designed to provide teachers with multiple educational activities that would have otherwise been distributed as individual CD-ROMs. While relatively unknown compared to other educational games of the era, this title has been preserved and made available by the [Internet Archive](https://archive.org/details/ohio-distinctive-software-vol-1).
 
+**[📥 Download Ohio Distinctive Software Vol. I](https://github.com/martimlobao/homebrew-dos-games/releases/download/ods-vol1-v1.0.0/ods-vol1.app.zip)**
+
 ![Ohio Distinctive Software Vol. I](/static/ods-vol1.png)
 
 ### Ready to Read with Pooh
 
 Ready to Read with Pooh is a 1997 interactive CD-ROM video game developed by Disney Interactive's Victoria studio that helps children from ages three to six learn to read. There are nine activities in the game. When the player completes an activity successfully, they will receive an item that goes into a treehouse.
+
+**[📥 Download Ready to Read with Pooh](https://github.com/martimlobao/homebrew-dos-games/releases/download/ready-to-read-with-pooh-v1.0.2/ready-to-read-with-pooh.app.zip)**
 
 ![Ready to Read with Pooh](/static/ready-to-read-with-pooh.png)
 
