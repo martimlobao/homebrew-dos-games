@@ -50,7 +50,7 @@ Mission T.H.I.N.K. (Thinking Hard Inspires New Knowledge) is the final addition 
 
 Ohio Distinctive Software Vol. I is a 1997 teacher's edition compilation containing four educational games from Ohio Distinctive Software, a company founded in 1987 that specialized in children's educational software. The collection features the robotic character Blit, with his distinctive green and yellow antennae, across four separate games: ODS Carnival Math, ODS Air Explorer, ODS Robot Challenge, and ODS Amazing Art Corner. This compilation was designed to provide teachers with multiple educational activities that would have otherwise been distributed as individual CD-ROMs. While relatively unknown compared to other educational games of the era, this title has been preserved and made available by the [Internet Archive](https://archive.org/details/ohio-distinctive-software-vol-1).
 
-![Ohio Distinctive Software Vol. I](/static/ods-v1.png)
+![Ohio Distinctive Software Vol. I](/static/ods-vol1.png)
 
 ### Ready to Read with Pooh
 
