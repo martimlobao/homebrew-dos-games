@@ -38,11 +38,19 @@ JumpStart Kindergarten is an educational video game developed by Fanfare Softwar
 
 ![JumpStart Kindergarten](/static/jumpstart-kindergarten.png)
 
+<!-- markdownlint-disable MD026 -->
 ### Mission T.H.I.N.K.
+<!-- markdownlint-enable MD026 -->
 
 Mission T.H.I.N.K. (Thinking Hard Inspires New Knowledge) is the final addition to the Super Solvers series created by The Learning Company. Morty Maxwell tries to take over the Shady Glen Game Factory with help of the Metal Minions. The game cultivates critical thinking skills by encouraging players to solve puzzles and create strategies. The original score in the five levels is by the famous fusion ensemble Yellowjackets.
 
 ![Mission T.H.I.N.K.](/static/mission-think.png)
+
+### Ohio Distinctive Software Vol. I
+
+Ohio Distinctive Software Vol. I is a 1997 teacher's edition compilation containing four educational games from Ohio Distinctive Software, a company founded in 1987 that specialized in children's educational software. The collection features the robotic character Blit, with his distinctive green and yellow antennae, across four separate games: ODS Carnival Math, ODS Air Explorer, ODS Robot Challenge, and ODS Amazing Art Corner. This compilation was designed to provide teachers with multiple educational activities that would have otherwise been distributed as individual CD-ROMs. While relatively unknown compared to other educational games of the era, this title has been preserved and made available by the [Internet Archive](https://archive.org/details/ohio-distinctive-software-vol-1).
+
+![Ohio Distinctive Software Vol. I](/static/ods-v1.png)
 
 ### Ready to Read with Pooh
 
