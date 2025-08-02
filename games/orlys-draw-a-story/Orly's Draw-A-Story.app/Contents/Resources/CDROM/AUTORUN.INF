@@ -1,0 +1,12 @@
+[autorun]
+open=autorun\autorun.exe
+icon=autorun\orly.ico,0
+shell\applet = &AutoPlay Dialog
+shell\applet\command = autorun\autorun.exe /s
+shell\install = &Install "Orly's Draw-A-Story"
+shell\install\command = setup32\setup32.exe setup32 autorun\autorun.exe
+shell\readfile = Rea&d-Me for "Orly's Draw-A-Story"
+shell\readfile\command = notepad.exe readme.txt
+shell\ereg = E&lectronic Registration
+shell\ereg\command = e_reg\register.exe
+

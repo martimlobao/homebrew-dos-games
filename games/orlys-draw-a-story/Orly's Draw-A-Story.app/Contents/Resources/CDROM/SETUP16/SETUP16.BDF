@@ -1,0 +1,60 @@
+[product]
+productname=Orly's Draw-A-Story
+productversion=00.01.00
+
+[REGISTER]
+HKEY_CLASSES_ROOT\SOFTWARE\Brøderbund_Software\Orly's_Draw-A-Story\00.01.00=$INSTALLTODIR$
+
+[general]
+installername=setup16
+wavedevice=1
+mididevice=1
+fontinstall=0
+successcomment=You will need to use the MIDI Setup program, since the application will be playing songs.
+chaincommand=$INSTALLTODIR$\BROEMIDI.EXE /pOrly's Draw-A-Story /c
+wing=1
+
+[quicktime]
+qtwrequired=0
+qtwversion=
+qtwcmdline=
+qtwsourcedir=
+qtwsuccomm=
+
+[directories]
+sourcedir=C:\ORLY
+MediaBuildDir=C:\BRODINST
+targetdir=ORLY
+
+[proggroup]
+groupname=Broderbund Software
+pgicount=2
+
+[pgi1]
+pgicaption=Setup for Orly's Draw-A-Story
+pgicmd=$INSTALLTODIR$\BROEMIDI.EXE /pOrly Draw-Me-a-Story
+
+[pgi2]
+pgicaption=Orly's Draw-A-Story
+pgicmd=$INSTALLTODIR$\ORLY.EXE
+
+[C:\ORLY]
+"f0"=DIB.DRV
+"f1"=MENUPICT.MHK
+"f2"=MIDI.MHK
+"f3"=MOHAWK.WIN
+"f4"=O_SND_FX.MHK
+"f5"=ORLY.CFG
+"f6"=ORLY.EXE
+"f7"=README.TXT
+"f8"=SPR_BUG.MHK
+"f9"=SPR_FLM.MHK
+"f10"=SPR_GEN.MHK
+"f11"=SPR_MYO.MHK
+"f12"=SPR_OBW.MHK
+"f13"=SPR_UTP.MHK
+"f14"=STYSTART.MHK
+"f15"=SYSTEM.MHK
+
+[build]
+sourcedir=C:\ORLY
