@@ -17,8 +17,8 @@ jobs:
         id: taginfo
         run: |
           TAG="${GITHUB_REF#refs/tags/}"
-          GAME="${TAG%%-v*}"
-          VERSION="${TAG#*-v}"
+          GAME="${TAG%-v*}"
+          VERSION="${TAG##*-v}"
           echo "game=$GAME" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
