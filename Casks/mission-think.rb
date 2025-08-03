@@ -1,6 +1,6 @@
 cask "mission-think" do
-    version "1.0.0"
-    sha256 "4386f22a4a8c9f9488c3f322b6e989e8784d7b6b6f8d464d81eb4643d288824f"
+    version "1.0.1"
+    sha256 "ff267aceb377d4693bbde6cbd034f7d8c3cc22e00988d9b51642e5df61a7c0ca"
 
     url "https://github.com/martimlobao/homebrew-dos-games/releases/download/mission-think-v#{version}/mission-think.app.zip"
     name "Mission T.H.I.N.K."

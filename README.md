@@ -32,7 +32,7 @@ Note that when running these games for the first time, macOS will complain that 
 
 JumpStart 1st Grade is a PC game created by Knowledge Adventure in 1995 intended to teach a first grade curriculum. It was the first appearance of Frankie, a brown, anthropomorphic dachshund dog who would go on to become the mascot of the JumpStart series.
 
-**[📥 Download JumpStart 1st Grade](https://github.com/martimlobao/homebrew-dos-games/releases/download/jumpstart-1st-grade-v1.0.0/jumpstart-1st-grade.app.zip)**
+**[📥 Download JumpStart 1st Grade](https://github.com/martimlobao/homebrew-dos-games/releases/download/jumpstart-1st-grade-v1.0.1/jumpstart-1st-grade.app.zip)**
 
 ![JumpStart 1st Grade](/static/jumpstart-1st-grade.png)
 
@@ -50,7 +50,7 @@ JumpStart Kindergarten is an educational video game developed by Fanfare Softwar
 
 Mission T.H.I.N.K. (Thinking Hard Inspires New Knowledge) is the final addition to the Super Solvers series created by The Learning Company. Morty Maxwell tries to take over the Shady Glen Game Factory with help of the Metal Minions. The game cultivates critical thinking skills by encouraging players to solve puzzles and create strategies. The original score in the five levels is by the famous fusion ensemble Yellowjackets.
 
-**[📥 Download Mission T.H.I.N.K.](https://github.com/martimlobao/homebrew-dos-games/releases/download/mission-think-v1.0.0/mission-think.app.zip)**
+**[📥 Download Mission T.H.I.N.K.](https://github.com/martimlobao/homebrew-dos-games/releases/download/mission-think-v1.0.1/mission-think.app.zip)**
 
 > [!NOTE]
 On first launch, the app will always crash with a general protection fault error with SSMWIN16. Click "Close" on the dialog and then "Close" again, and relaunch the program within Windows and it will run normally the second time.
@@ -69,7 +69,7 @@ Ohio Distinctive Software Vol. I is a 1997 teacher's edition compilation contain
 
 Orly's Draw a Story is a video game released in 1997 by Broderbund aimed at children from 5 to 10. It focuses around the two main characters, Orly, an 8-year-old girl and her anthropomorphic talking frog friend Lancelot who lives in Jamaica. The game features four unique stories narrated by Orly. The player is able to illustrate each of the stories with their own paintings, either original drawings or using ready-prepared objects. As Orly tells the story, the user is asked to create an item such as a friend for a flying monster or a birthday present to give to Orly.
 
-**[📥 Download Orly's Draw-A-Story](https://github.com/martimlobao/homebrew-dos-games/releases/download/ods-vol1-v1.0.0/orlys-draw-a-story.app.zip)**
+**[📥 Download Orly's Draw-A-Story](https://github.com/martimlobao/homebrew-dos-games/releases/download/orlys-draw-a-story-v1.0.0/orlys-draw-a-story.app.zip)**
 
 ![Orly's Draw-A-Story](/static/orlys-draw-a-story.png)
 
@@ -77,7 +77,7 @@ Orly's Draw a Story is a video game released in 1997 by Broderbund aimed at chil
 
 Ready to Read with Pooh is a 1997 interactive CD-ROM video game developed by Disney Interactive's Victoria studio that helps children from ages three to six learn to read. There are nine activities in the game. When the player completes an activity successfully, they will receive an item that goes into a treehouse.
 
-**[📥 Download Ready to Read with Pooh](https://github.com/martimlobao/homebrew-dos-games/releases/download/ready-to-read-with-pooh-v1.0.2/ready-to-read-with-pooh.app.zip)**
+**[📥 Download Ready to Read with Pooh](https://github.com/martimlobao/homebrew-dos-games/releases/download/ready-to-read-with-pooh-v1.0.3/ready-to-read-with-pooh.app.zip)**
 
 ![Ready to Read with Pooh](/static/ready-to-read-with-pooh.png)
 
