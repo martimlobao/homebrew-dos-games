@@ -6,9 +6,14 @@ GAMEDATA="$HOME/Library/Application Support/$NAME"
 CONF_TMP="/tmp/dosbox_x_conf_$$.conf"
 
 mkdir -p "$GAMEDATA"
+mkdir -p "$GAMEDATA/win311qt"
 
 if [ ! -f "$GAMEDATA/AUTORUN.BAT" ]; then
   cp -R "$RESOURCES/GAMEDATA/"* "$GAMEDATA/"
+fi
+
+if [ ! -f "$GAMEDATA/win311qt/runapp.bat" ]; then
+  cp -R "$RESOURCES/win311qt/"* "$GAMEDATA/win311qt/"
 fi
 
 cat > "$CONF_TMP" <<EOF
@@ -22,7 +27,7 @@ memsize=32
 
 [autoexec]
 MOUNT C "$GAMEDATA"
-MOUNT D "$RESOURCES/win311qt"
+MOUNT D "$GAMEDATA/win311qt"
 MOUNT E "$RESOURCES/CDROM" -t cdrom
 C:
 AUTORUN.BAT
