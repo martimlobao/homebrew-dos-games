@@ -1,6 +1,6 @@
 cask "jumpstart-1st-grade" do
-    version "1.0.0"
-    sha256 "4d75893036b6836f4c0605ddfdf4828a5e2c7ea123a2465bd3cc113b80b2a471"
+    version "1.0.1"
+    sha256 "24406ab01e32c02ebfc00fb7c362cb9770ff6beedcfc42d6a031e569e5341a6a"
 
     url "https://github.com/martimlobao/homebrew-dos-games/releases/download/jumpstart-1st-grade-v#{version}/jumpstart-1st-grade.app.zip"
     name "JumpStart 1st Grade"

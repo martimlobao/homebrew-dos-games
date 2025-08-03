@@ -1,6 +1,6 @@
 cask "orlys-draw-a-story" do
     version "1.0.0"
-    sha256 "XXX"
+    sha256 "f58e0af9f13b2fb8058183ae468e844d327d7dc9d273d0c014313656e742976c"
 
     url "https://github.com/martimlobao/homebrew-dos-games/releases/download/orlys-draw-a-story-v#{version}/orlys-draw-a-story.app.zip"
     name "Orly's Draw-A-Story"
