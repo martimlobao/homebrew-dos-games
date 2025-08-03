@@ -52,6 +52,9 @@ Mission T.H.I.N.K. (Thinking Hard Inspires New Knowledge) is the final addition 
 
 **[📥 Download Mission T.H.I.N.K.](https://github.com/martimlobao/homebrew-dos-games/releases/download/mission-think-v1.0.0/mission-think.app.zip)**
 
+> [!NOTE]
+On first launch, the app will always crash with a general protection fault error with SSMWIN16. Click "Close" on the dialog and then "Close" again, and relaunch the program within Windows and it will run normally the second time.
+
 ![Mission T.H.I.N.K.](/static/mission-think.png)
 
 ### Ohio Distinctive Software Vol. I
